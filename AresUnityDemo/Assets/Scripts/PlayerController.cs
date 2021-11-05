@@ -31,8 +31,8 @@ public class PlayerController : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         // characterController = gameObject.GetComponentInChildren<CharacterController>();
         turret = GameObject.Find("Player/Turret");
-        cannon = turret.transform.Find("CannonObj").gameObject;
-        cannonTip = cannon.transform.Find("Cannon Tip").gameObject;
+        cannon = GameObject.Find("Player/Turret/CannonObj");
+        cannonTip = GameObject.Find("Player/Turret/CannonObj/Cannon Tip");
         this.messageFromTcpServer = "";
         // this.previousMessage = "";
         // this.timeMoving = this.movementPeriod;

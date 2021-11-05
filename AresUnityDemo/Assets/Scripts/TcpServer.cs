@@ -24,8 +24,9 @@ public class TcpServer : MonoBehaviour {
 	private TcpClient connectedTcpClient; 
     private PlayerController player;
     private GameController gameController;
-	private bool isEnabled = false;
+	// private bool isEnabled = false;
     private bool playerFound = false;
+	private bool startTheGame = false;
 	private float delayBeforeEmptyStream = 0.3f;
     private float period;
     private string messageToSend;
@@ -33,7 +34,6 @@ public class TcpServer : MonoBehaviour {
 	#endregion 	
 
     void Awake(){
-        FindPlayer();
         this.messageToSend = "";
     }
 		
@@ -52,10 +52,19 @@ public class TcpServer : MonoBehaviour {
 	void Update () { 		
 		// Debug.Log($"this enabled @ tcpServer {this.enabled}");
 		
-		// if (Input.GetKeyDown(KeyCode.Space)) {             
+		// if (Input.GetKeyDown(KeyCode.Space)) {
 		// 	SendMessage();         
-		// } 	
-        if (!this.playerFound) return;
+		// }
+		if (this.startTheGame){
+			GameControllerStartGame();
+			return;
+		}
+
+        if (!this.playerFound){
+			Debug.Log("Player indeed not found @ tcp");
+        	FindPlayer();
+			return;
+		}
         // Debug.Log($"Player {player}");
         if (this.messageToSend != ""){
             // Debug.Log("client message: " + this.messageToSend);
@@ -76,7 +85,7 @@ public class TcpServer : MonoBehaviour {
             SendMessageToPlayer("");
         }
 		this.period -= Time.deltaTime;
-		this.isEnabled = this.enabled;
+		// this.isEnabled = this.enabled;
 	}
 
     private void FindPlayer(){
@@ -106,6 +115,7 @@ public class TcpServer : MonoBehaviour {
 						int length; 						
 						// Read incomming stream into byte arrary.
                         while(true){
+							NextMessage:
 							if ( stream.DataAvailable ){
 								while ((length = stream.Read(bytes, 0, bytes.Length)) != 0) { 	
 									var incommingData = new byte[length]; 							
@@ -119,12 +129,19 @@ public class TcpServer : MonoBehaviour {
 							}
 							// Debug.Log($"data unavailable | period {this.period}");
 							if(this.period < 0f) this.messageToSend = "";
-							if(this.messageToSend == "quit"){
-								CloseTcpConnection(connectedTcpClient, tcpListener);
-								Debug.Log("The socket is finally closed");
-								break;
+							switch(this.messageToSend){
+								case "quit":
+									CloseTcpConnection(connectedTcpClient, tcpListener);
+									Debug.Log("The socket is finally closed");
+									goto NextClient;
+								case "start":
+									Debug.Log("TCP msg is starting the game");
+									this.startTheGame = true;
+									this.messageToSend = "";			
+									goto NextMessage;
 							}
                         }
+						NextClient:
 						this.messageToSend = "";
 					} 				
 				} 			
@@ -138,14 +155,14 @@ public class TcpServer : MonoBehaviour {
 	private void CloseTcpConnection(TcpClient connectedTcpClient, TcpListener tcpListener){
 		try {
 			connectedTcpClient.Close();
-			Debug.Log("Fechando TCP Client");
+			Debug.Log("Closing TCP Client");
     	}
 		catch(Exception e){
-			Debug.Log($"Erro ao fechar TCP Client: {e.Message}");
+			Debug.Log($"Error when trying to TCP Client: {e.Message}");
 		}
 	    // try{
         // 	tcpListener.Stop();
-        // 	Debug.Log("Fechando TCP Listener");
+        // 	Debug.Log("Closing TCP Listener");
 		// }
 		// catch(Exception e){
 		// 	Debug.Log($"Erro ao fechar TCP Listener: {e.Message}");
@@ -159,6 +176,15 @@ public class TcpServer : MonoBehaviour {
 			return true;
 		else
 			return false;
+	}
+
+	private void GameControllerStartGame(){
+		if(this.gameController){
+			this.gameController.StartGame();
+			this.startTheGame = false;
+		}
+		else
+			Debug.LogError("gameController not found");
 	}
 
     private void SendMessageToPlayer(string message){

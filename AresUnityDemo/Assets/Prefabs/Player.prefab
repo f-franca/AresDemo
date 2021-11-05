@@ -382,7 +382,7 @@ MonoBehaviour:
   speed: 6
   turnSpeed: 50
   turretSpeed: 50
-  launchVelocity: 700
+  launchVelocity: 5
   projectile: {fileID: 739075092507167077, guid: ca497e91a78894eb5972672dc9516f29, type: 3}
 --- !u!1 &5852402518114399736
 GameObject:

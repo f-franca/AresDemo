@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject target;
+    public GameObject player;
     // public PlayerController player;
     public float restartdelay = 1f;
     // public Text timerText;
@@ -13,7 +15,6 @@ public class GameController : MonoBehaviour
     public float timeRemaining = 60;
     //public GameObject completeLevelUI;
     public int numberOfTargets = 3;
-    public GameObject target;
 
     private bool gameover = false;
     private TcpServer tcpServer;
@@ -23,20 +24,6 @@ public class GameController : MonoBehaviour
     {
         tcpServer = GetComponent<TcpServer>();
         tcpServer.enabled = true;
-        float x;
-        float y;
-        float z;
-        y = 0.3f;
-        Vector3 pos;       
-        
-        // transform.position = pos;
-        for(int i = 0; i < numberOfTargets; i++){
-            x = Random.Range(-18f, 18f);
-            z = Random.Range(-18f, 18f);
-            pos = new Vector3(x, y, z);
-            // Debug.Log($"Random pos {pos}");
-            GameObject shell = Instantiate(target, pos, gameObject.transform.rotation);
-        }
     }
 
     // Update is called once per frame
@@ -60,6 +47,30 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void StartGame(){
+        Debug.Log("Start command received, starting game");
+        Vector3 posPlayer = new Vector3(0f, 0.5f, -40f);
+        this.player = Instantiate(this.player, posPlayer, gameObject.transform.rotation);
+        this.player.name = "Player";
+
+        float x;
+        float y;
+        float z;
+        y = 0.3f;
+        Vector3 posTarget;       
+        
+        // transform.position = pos;
+        for(int i = 0; i < numberOfTargets; i++){
+            x = Random.Range(-18f, 18f);
+            z = Random.Range(-18f, 18f);
+            posTarget = new Vector3(x, y, z);
+            // Debug.Log($"Random pos {pos}");
+            GameObject targetGameObject = Instantiate(target, posTarget, gameObject.transform.rotation);
+            targetGameObject.name = "Target";
+        }
+
+    }
+
     public void EndGame()
     {
         if (gameover == false)
@@ -78,10 +89,6 @@ public class GameController : MonoBehaviour
     {
         timeRemaining -= UnityEngine.Time.deltaTime;
         // timerText.text = ("Timer: " + (int)timeRemaining);
-    }
-
-    public bool IsTcpControllerEnabled(){
-        return this.tcpServer.enabled;
     }
 
     // void updateFuelText()
