@@ -61,7 +61,7 @@ public class TcpServer : MonoBehaviour {
 		}
 
         if (!this.playerFound){
-			Debug.Log("Player indeed not found @ tcp");
+			// Debug.Log("Player indeed not found @ tcp");
         	FindPlayer();
 			return;
 		}
@@ -91,7 +91,7 @@ public class TcpServer : MonoBehaviour {
     private void FindPlayer(){
         GameObject playerGO = GameObject.Find("Player");
         if(playerGO){
-			Debug.Log("Player found @ tcpServer");
+			// Debug.Log("Player found @ tcpServer");
             this.player = playerGO.GetComponent<PlayerController>();
             this.playerFound = true;
         }

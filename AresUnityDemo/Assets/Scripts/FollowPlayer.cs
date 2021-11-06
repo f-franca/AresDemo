@@ -26,7 +26,7 @@ public class FollowPlayer : MonoBehaviour
     {
         // TryToFindPlayer();
         if (!this.playerFound){
-			Debug.Log("Player indeed not found @ camera");
+			// Debug.Log("Player indeed not found @ camera");
         	FindPlayer();
 			return;
 		}
@@ -86,7 +86,7 @@ public class FollowPlayer : MonoBehaviour
     private void FindPlayer(){
         GameObject playerGO = GameObject.Find("Player");
         if(playerGO){
-			Debug.Log("Player found @ camera");
+			// Debug.Log("Player found @ camera");
             // this.player = playerGO.GetComponent<PlayerController>();
             this.player = GameObject.Find("Player/Turret/CannonObj");
             this.playerFound = true;

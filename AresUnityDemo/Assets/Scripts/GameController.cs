@@ -12,11 +12,11 @@ public class GameController : MonoBehaviour
     public float restartdelay = 1f;
     // public Text timerText;
     // public Text fuelText;
-    public float timeRemaining = 60;
+    public float gameTime = 60;
     //public GameObject completeLevelUI;
     public int numberOfTargets = 3;
 
-    private bool gameover = false;
+    private bool gameHasStarted = false;
     private TcpServer tcpServer;
 
     // Start is called before the first frame update
@@ -35,20 +35,23 @@ public class GameController : MonoBehaviour
             Application.Quit();
         }
 
-        if (timeRemaining > 0)
-        {
-            updateTimerText();
-        }
-        else
-        {
-            // Debug.Log("GAME OVER (NOTIFY C++)");
-            Application.Quit();
-            // Invoke("Restart", restartdelay);
-        }
+        if(this.gameHasStarted)
+            if (gameTime > 0)
+            {
+                UpdateTimer();
+                if(!CheckForTargets())
+                    EndGame("No more targets");
+            }
+            else
+            {
+                EndGame("Time is up");
+                // Debug.Log("GAME OVER (NOTIFY C++)");
+            }
     }
 
     public void StartGame(){
         Debug.Log("Start command received, starting game");
+        this.gameHasStarted = true;
         Vector3 posPlayer = new Vector3(0f, 0.5f, -40f);
         this.player = Instantiate(this.player, posPlayer, gameObject.transform.rotation);
         this.player.name = "Player";
@@ -71,24 +74,27 @@ public class GameController : MonoBehaviour
 
     }
 
-    public void EndGame()
+    public void EndGame(string reason)
     {
-        if (gameover == false)
-        {
-            gameover = true;
-            Debug.Log("GAME OVER");
-            Invoke("Restart", restartdelay);
-        }
+        Debug.Log($"GAME OVER, {reason}");
+        Invoke("Restart", restartdelay);
     }
+
     void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    void updateTimerText()
+    void UpdateTimer()
     {
-        timeRemaining -= UnityEngine.Time.deltaTime;
-        // timerText.text = ("Timer: " + (int)timeRemaining);
+        gameTime -= UnityEngine.Time.deltaTime;
+        // timerText.text = ("Timer: " + (int)gameTime);
+    }
+
+    private bool CheckForTargets(){
+        if(GameObject.Find("Target"))
+            return true;
+        return false;
     }
 
     // void updateFuelText()
@@ -96,12 +102,6 @@ public class GameController : MonoBehaviour
     //     fuelText.text = ("Fuel: " + player.GetFuel());
     // }
 
-    /*
-        void Restart()
-        {
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-    */
     /*
         public void CompleteLevel()
         {
