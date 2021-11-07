@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool hasShot = false;
     private int fuel = 50;
     private int totalFuelConsumed = 0;
+    private int firedRounds = 0;
     private float timeBetweenShooting = 1f;
     // public float movementPeriod;
     // private float timeMoving;
@@ -47,8 +48,11 @@ public class PlayerController : MonoBehaviour
         ) {
             if(this.messageFromTcpServer == " "){
                 if(!this.hasShot){
+                    Debug.Log("Playert attemp to fire");
                     CheckForMovement(this.messageFromTcpServer);
+                    this.messageFromTcpServer = "";
                     this.hasShot = true;
+                    // this.firedRounds++;
                 }
                 if(this.timeBetweenShooting  <= 0){
                     this.hasShot = false;
@@ -58,27 +62,6 @@ public class PlayerController : MonoBehaviour
             } else
                 CheckForMovement(this.messageFromTcpServer);
         }
-        //     // while(this.timeMoving >= 0){
-        //     if (this.timeMoving >= 0){
-        //         // Debug.Log($"update player {this.timeMoving}");
-        //         this.timeMoving -= Time.deltaTime;
-        //         CheckForMovement(this.messageFromTcpServer);
-        //     } else {
-
-        //         CheckForMovement(this.messageFromTcpServer);
-        //         this.previousMessage = messageFromTcpServer;
-        //         this.messageFromTcpServer = "";
-        //         // this.timeMoving = this.movementPeriod;
-        //     }
-        // } 
-        // else
-        //     if(this.messageFromTcpServer != "" &&
-        //             (this.previousMessage == this.messageFromTcpServer)
-        //         ) {
-        //             CheckForMovement(this.messageFromTcpServer);
-        //             this.timeMoving = this.movementPeriod;
-        //             this.previousMessage = "";
-        //     }
     }
     
     public void CheckForMovement(string messageFromTcpServer){
@@ -172,17 +155,22 @@ public class PlayerController : MonoBehaviour
         hasInput = false;
     }
 
-    private void Shoot(string messageFromTcpServer){
+    public void Shoot(string messageFromTcpServer){
         if (messageFromTcpServer == " ")
         // if (Input.GetKeyDown("space"))
         {
  			GameObject shell = Instantiate(projectile, cannonTip.transform.position, cannonTip.transform.rotation);
  			shell.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, launchVelocity * 1000, 0));
+            this.firedRounds++;
         }
     }
 
     public void MessageTcp(string messageReceived){
         this.messageFromTcpServer = messageReceived;
+    }
+
+    public int FiredRounds(){
+        return this.firedRounds;
     }
 
     public void ConsumeFuel(int amount)

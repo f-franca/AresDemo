@@ -27,6 +27,8 @@ public class TcpServer : MonoBehaviour {
 	// private bool isEnabled = false;
     private bool playerFound = false;
 	private bool startTheGame = false;
+	private bool gameOverTcp = false;
+	private bool okSentToClient = true;
 	private float delayBeforeEmptyStream = 0.3f;
     private float period;
     private string messageToSend;
@@ -55,6 +57,9 @@ public class TcpServer : MonoBehaviour {
 		// if (Input.GetKeyDown(KeyCode.Space)) {
 		// 	SendMessage();         
 		// }
+
+		if(this.gameOverTcp) return;
+
 		if (this.startTheGame){
 			GameControllerStartGame();
 			return;
@@ -77,9 +82,16 @@ public class TcpServer : MonoBehaviour {
                 case "l":
                 case "i":
                 case "k":
-                case " ":
                     SendMessageToPlayer(this.messageToSend);
                     break;
+                case " ":
+					// SendMessageToPlayer(this.messageToSend);
+					
+					this.messageToSend = "";
+					// int firedRounds = PlayerFiredRounds();
+					int firedRounds = MakePlayerShoot();
+					SendMessageToTcpClient(firedRounds.ToString());
+					break;
             }
         } else{
             SendMessageToPlayer("");
@@ -106,7 +118,7 @@ public class TcpServer : MonoBehaviour {
 			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052);
 			tcpListener.Start();              
 			Byte[] bytes = new Byte[1024];  
-			while (true) { 				
+			// while (true) { 				
 				Debug.Log("Server is listening");    
 				using (connectedTcpClient = tcpListener.AcceptTcpClient()) { 					
 					Debug.Log("Connection established");    
@@ -124,9 +136,17 @@ public class TcpServer : MonoBehaviour {
 									this.messageToSend = Encoding.ASCII.GetString(incommingData);
 									// Debug.Log($"recv stream @ tcpServer [{this.messageToSend}]");		
 									this.period = this.delayBeforeEmptyStream;
+									this.okSentToClient = false;
 									break;
 								}
 							}
+
+							if(gameController.IsGameOver()){
+								SendMessageToTcpClient("Game Over");
+								this.gameOverTcp = true;
+								return;
+							}
+									
 							// Debug.Log($"data unavailable | period {this.period}");
 							if(this.period < 0f) this.messageToSend = "";
 							switch(this.messageToSend){
@@ -137,15 +157,33 @@ public class TcpServer : MonoBehaviour {
 								case "start":
 									Debug.Log("TCP msg is starting the game");
 									this.startTheGame = true;
-									this.messageToSend = "";			
+									this.messageToSend = "";		
 									goto NextMessage;
+								case "":
+									goto NextMessage;
+								default:
+									if(!this.okSentToClient){
+										SendMessageToTcpClient("ok");
+										this.okSentToClient = true;
+									}
+									break;
+									// goto NextMessage;
+								// case " ":
+								// 	// send back do c++ player.FiredRounds()
+								// 	SendMessageToPlayer(this.messageToSend);
+								// 	this.messageToSend = "";
+								// 	// SendMessageToPlayer(this.messageToSend);
+								// 	int firedRounds = PlayerFiredRounds();
+								// 	SendMessageToTcpClient(firedRounds.ToString());
+								// 	break;
 							}
                         }
 						NextClient:
 						this.messageToSend = "";
 					} 				
-				} 			
-			} 		
+				}
+				Debug.Log("End of TCP Listener");		
+			// } 		
 		} 		
 		catch (SocketException socketException) { 			
 			Debug.Log("SocketException " + socketException.ToString()); 		
@@ -169,15 +207,6 @@ public class TcpServer : MonoBehaviour {
 		// }
 	}
 
-	bool SocketConnected(Socket s) {
-		bool part1 = s.Poll(1000, SelectMode.SelectRead);
-		bool part2 = (s.Available == 0);
-		if (part1 && part2)
-			return true;
-		else
-			return false;
-	}
-
 	private void GameControllerStartGame(){
 		if(this.gameController){
 			this.gameController.StartGame();
@@ -190,14 +219,25 @@ public class TcpServer : MonoBehaviour {
     private void SendMessageToPlayer(string message){
         if (this.player){
             player.MessageTcp(message);
-			// this.messageToSend = "";
         }
     }
+
+	private int MakePlayerShoot(){
+		if (this.player){
+            player.Shoot(" ");
+			return PlayerFiredRounds();
+        }
+		return -1;
+	}
+
+	private int PlayerFiredRounds(){
+		return this.player ? player.FiredRounds() : 0;
+	}
 
 	/// <summary> 	
 	/// Send message to client using socket connection. 	
 	/// </summary> 	
-	private void SendMessage() { 		
+	private void SendMessageToTcpClient(string messageToClient) { 		
 		if (connectedTcpClient == null) {             
 			return;         
 		}  		
@@ -206,12 +246,11 @@ public class TcpServer : MonoBehaviour {
 			// Get a stream object for writing. 			
 			NetworkStream stream = connectedTcpClient.GetStream(); 			
 			if (stream.CanWrite) {                 
-				string serverMessage = "This is a message from your server."; 			
 				// Convert string message to byte array.                 
-				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage); 				
+				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(messageToClient);
 				// Write byte array to socketConnection stream.               
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);               
-				Debug.Log("Server sent his message - should be received by client");           
+				// Debug.Log($"Server sent [{messageToClient}], length [{serverMessageAsByteArray.Length}]");
 			}       
 		} 		
 		catch (SocketException socketException) {             

@@ -6,15 +6,15 @@
 ProjectName            :=AresGameInput
 ConfigurationName      :=Debug
 WorkspaceConfiguration := $(ConfigurationName)
-WorkspacePath          :=/home/nando/Dev/DevCpp
-ProjectPath            :=/home/nando/Dev/DevCpp/AresGameInput
+WorkspacePath          :=/home/nando/Dev/githubAresDemo/AresDemo/AresGameInput
+ProjectPath            :=/home/nando/Dev/githubAresDemo/AresDemo/AresGameInput/AresGameInput
 IntermediateDirectory  :=../build-$(ConfigurationName)/AresGameInput
 OutDir                 :=../build-$(ConfigurationName)/AresGameInput
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Fernando
-Date                   :=03/11/21
+Date                   :=07/11/21
 CodeLitePath           :=/home/nando/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -92,7 +92,7 @@ PreBuild:
 ## Objects
 ##
 ../build-$(ConfigurationName)/AresGameInput/main.cpp$(ObjectSuffix): main.cpp ../build-$(ConfigurationName)/AresGameInput/main.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/nando/Dev/DevCpp/AresGameInput/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/nando/Dev/githubAresDemo/AresDemo/AresGameInput/AresGameInput/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
 ../build-$(ConfigurationName)/AresGameInput/main.cpp$(DependSuffix): main.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT../build-$(ConfigurationName)/AresGameInput/main.cpp$(ObjectSuffix) -MF../build-$(ConfigurationName)/AresGameInput/main.cpp$(DependSuffix) -MM main.cpp
 

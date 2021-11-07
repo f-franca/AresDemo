@@ -16,7 +16,8 @@ public class GameController : MonoBehaviour
     //public GameObject completeLevelUI;
     public int numberOfTargets = 3;
 
-    private bool gameHasStarted = false;
+    private bool hasGameStarted = false;
+    private bool gameOver = false;
     private TcpServer tcpServer;
 
     // Start is called before the first frame update
@@ -35,7 +36,7 @@ public class GameController : MonoBehaviour
             Application.Quit();
         }
 
-        if(this.gameHasStarted)
+        if(this.hasGameStarted)
             if (gameTime > 0)
             {
                 UpdateTimer();
@@ -50,8 +51,10 @@ public class GameController : MonoBehaviour
     }
 
     public void StartGame(){
+        if(hasGameStarted) return;
+
         Debug.Log("Start command received, starting game");
-        this.gameHasStarted = true;
+        this.hasGameStarted = true;
         Vector3 posPlayer = new Vector3(0f, 0.5f, -40f);
         this.player = Instantiate(this.player, posPlayer, gameObject.transform.rotation);
         this.player.name = "Player";
@@ -76,7 +79,9 @@ public class GameController : MonoBehaviour
 
     public void EndGame(string reason)
     {
+        if(this.gameOver) return;
         Debug.Log($"GAME OVER, {reason}");
+        this.gameOver = true;
         Invoke("Restart", restartdelay);
     }
 
@@ -97,6 +102,9 @@ public class GameController : MonoBehaviour
         return false;
     }
 
+    public bool IsGameOver(){
+        return this.gameOver;
+    }
     // void updateFuelText()
     // {
     //     fuelText.text = ("Fuel: " + player.GetFuel());

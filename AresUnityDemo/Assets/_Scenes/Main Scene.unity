@@ -525,8 +525,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 5852402517822899568, guid: 2c4265515b16c01f2b18d89d8ab75a36, type: 3}
   player: {fileID: 5852402517822899568, guid: 67941f133cc96d41f954023a2dfbe980, type: 3}
-  restartdelay: 1
-  timeRemaining: 10
+  restartdelay: 3
+  gameTime: 120
   numberOfTargets: 3
 --- !u!114 &1615717258
 MonoBehaviour:
