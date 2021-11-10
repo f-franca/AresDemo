@@ -51,13 +51,7 @@ public class TcpServer : MonoBehaviour {
 	}  	
 	
 	// Update is called once per frame
-	void Update () { 		
-		// Debug.Log($"this enabled @ tcpServer {this.enabled}");
-		
-		// if (Input.GetKeyDown(KeyCode.Space)) {
-		// 	SendMessage();         
-		// }
-
+	void Update () {
 		if(this.gameOverTcp) return;
 
 		if (this.startTheGame){
@@ -66,13 +60,18 @@ public class TcpServer : MonoBehaviour {
 		}
 
         if (!this.playerFound){
-			// Debug.Log("Player indeed not found @ tcp");
         	FindPlayer();
 			return;
 		}
-        // Debug.Log($"Player {player}");
+
+		if(gameController.IsGameOver()){
+			string messageGameOver = "" + gameController.GameOverReason() + " || Hits on Target: " + (this.gameController.GetHitsOnTarget()).ToString();
+			SendMessageToTcpClient(messageGameOver);
+			this.gameOverTcp = true;
+			return;
+		}
+
         if (this.messageToSend != ""){
-            // Debug.Log("client message: " + this.messageToSend);
             switch(this.messageToSend){
                 case "w":
                 case "s":
@@ -85,19 +84,16 @@ public class TcpServer : MonoBehaviour {
                     SendMessageToPlayer(this.messageToSend);
                     break;
                 case " ":
-					// SendMessageToPlayer(this.messageToSend);
-					
 					this.messageToSend = "";
-					// int firedRounds = PlayerFiredRounds();
 					int firedRounds = MakePlayerShoot();
 					SendMessageToTcpClient(firedRounds.ToString());
+					// SendMessageToTcpClient( (this.gameController.GetHitsOnTarget()).ToString() );
 					break;
             }
         } else{
             SendMessageToPlayer("");
         }
 		this.period -= Time.deltaTime;
-		// this.isEnabled = this.enabled;
 	}
 
     private void FindPlayer(){
@@ -141,16 +137,19 @@ public class TcpServer : MonoBehaviour {
 								}
 							}
 
-							if(gameController.IsGameOver()){
-								SendMessageToTcpClient("Game Over");
-								this.gameOverTcp = true;
-								return;
-							}
+							// if(gameController.IsGameOver()){
+							// 	string messageGameOver = "" + gameController.GameOverReason() + " || Hits on Target: " + (this.gameController.GetHitsOnTarget()).ToString();
+							// 	SendMessageToTcpClient(messageGameOver);
+							// 	this.gameOverTcp = true;
+							// 	return;
+							// }
 									
 							// Debug.Log($"data unavailable | period {this.period}");
 							if(this.period < 0f) this.messageToSend = "";
 							switch(this.messageToSend){
 								case "quit":
+									string messageGameOver = "Game Over || Hits on Target: " + (this.gameController.GetHitsOnTarget()).ToString();
+									SendMessageToTcpClient(messageGameOver);
 									CloseTcpConnection(connectedTcpClient, tcpListener);
 									Debug.Log("The socket is finally closed");
 									goto NextClient;

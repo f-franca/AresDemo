@@ -18,6 +18,8 @@ public class GameController : MonoBehaviour
 
     private bool hasGameStarted = false;
     private bool gameOver = false;
+    private int hitsOnTarget = 0;
+    private string gameOverReason;
     private TcpServer tcpServer;
 
     // Start is called before the first frame update
@@ -82,7 +84,12 @@ public class GameController : MonoBehaviour
         if(this.gameOver) return;
         Debug.Log($"GAME OVER, {reason}");
         this.gameOver = true;
+        this.gameOverReason = "GAME OVER, " + reason;
         Invoke("Restart", restartdelay);
+    }
+
+    public string GameOverReason(){
+        return this.gameOverReason;
     }
 
     void Restart()
@@ -104,6 +111,14 @@ public class GameController : MonoBehaviour
 
     public bool IsGameOver(){
         return this.gameOver;
+    }
+
+    public void SetHitOnTarget(){
+        this.hitsOnTarget++;
+    }
+
+    public int GetHitsOnTarget(){
+        return this.hitsOnTarget;
     }
     // void updateFuelText()
     // {

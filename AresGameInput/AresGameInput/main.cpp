@@ -11,13 +11,30 @@
 
 using namespace std;
 
-int CompareTwoCharArrays(char buffer[], char char2[]){
-		size_t len = strlen(buffer)+1;
-		char* subject = new char[len]; // allocate for string and ending \0
-		strcpy(subject,buffer);
-		cout << "comparison " << ( strcmp(subject, char2) == 0  ) << endl;
-		return 1;
-	}
+string ButtonMap(string input){
+	string output;
+	
+	if ( input ==  "w" )
+		output = "Move Forward";
+	else if ( input ==  "s" )
+		output = "Move Backward";
+	else if ( input ==  "a" )
+		output = "Move Left";
+	else if ( input ==  "d" )
+		output = "Move Right";
+	else if ( input ==  "i" )
+		output = "Move Turret Up";
+	else if ( input ==  "k" )
+		output = "Move Turret Down";
+	else if ( input ==  "j" )
+		output = "Move Turret Left";
+	else if ( input ==  "l" )
+		output = "Move Turret Right";
+	else
+		output = input;
+	
+	return output;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -25,6 +42,8 @@ int main(int argc, char const *argv[])
 	
 	bool hasGameStarted = false;
 	int sock = 0;
+	int shotsFired = 0;
+//	int hitsOnTarget = 0;
 	struct sockaddr_in serv_addr;
 	
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -58,18 +77,22 @@ int main(int argc, char const *argv[])
 	
 	while (true){
 		int byte_count;
-//		char okArray[] = "ok";
 		char buffer[56];
 		
 		system("stty raw"); 
 		char oneChar = getchar();
-//		int oneCharInt = oneChar;
 		if (oneChar == 27) { // escape
 			system("stty cooked");
 			string quit = "quit";
 			Logger("Quitting game");
 			const char* toSend = quit.c_str();
 			send(sock , toSend , strlen(toSend) , 0 );
+			
+			byte_count = recv(sock, buffer, sizeof(buffer), 0);
+			char subbuff[byte_count + 1];
+			memcpy( subbuff, &buffer[0], byte_count );
+			subbuff[byte_count] = '\0';
+			Logger( string(subbuff) );
 			shutdown(sock,2);
 			break;
 		}
@@ -78,7 +101,8 @@ int main(int argc, char const *argv[])
 			
 			if(hasGameStarted)
 				continue;
-				
+			
+			StartTimer();
 			string start = "start";
 			Logger("Starting game");
 			const char* toSend = start.c_str();
@@ -99,7 +123,6 @@ int main(int argc, char const *argv[])
 			subbuff[byte_count] = '\0';
 //			cout << "byte_count: " << byte_count << " sub buffer: " << subbuff << endl;
 
-//			cout << " comparison move" << ( strcmp(subbuff,"ok") == 0 )<< endl;
 			if( strcmp(subbuff,"ok") != 0 ){  // message other than OK received
 				Logger("Did not received OK, ending program:: " + string(subbuff));
 				shutdown(sock,2);
@@ -112,8 +135,18 @@ int main(int argc, char const *argv[])
 			subbuff2[byte_count] = '\0';
 //			cout << "byte_count: " << byte_count << " sub buffer2:[" << subbuff2 << "]"<< endl;
 			Logger("Firing weapon:: Shots fired: " + string(subbuff2));
+			shotsFired = atoi(subbuff2);
+			
+//			byte_count = recv(sock, buffer, sizeof(buffer), 0);
+//			char subbuff3[byte_count + 1];
+//			memcpy( subbuff3, &buffer[0], byte_count );
+//			subbuff3[byte_count] = '\0';
+////			cout << "byte_count: " << byte_count << " sub buffer2:[" << subbuff2 << "]"<< endl;
+//			Logger("Hits on target: " + string(subbuff3));
+//			hitsOnTarget = atoi(subbuff3);
+			
 
-			continue;			 
+			continue;
 		}
 		else {
 			// Reset terminal to normal "cooked" mode 
@@ -134,15 +167,13 @@ int main(int argc, char const *argv[])
 				shutdown(sock,2);
 				break;
 			}
-
-			Logger(toSendStr + " pressed");
-//			cout << " comparison move" << ( strcmp(subbuff,"ok") == 0 )<< endl;
+			
+			
+			Logger( ButtonMap(toSendStr) + " pressed");
 //			cout << endl << "char: [" << oneChar << "] = [" << toSend << "] | [" << oneCharInt << "] sent" << endl;
-
 		}
 
 	}
-	// TODO number of shots input, time elapsed and # of targets hit
-	CloseFile();
+	CloseFile(shotsFired);
 	return 0;
 }

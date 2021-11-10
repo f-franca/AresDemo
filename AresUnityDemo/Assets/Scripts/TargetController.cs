@@ -9,7 +9,9 @@ public class TargetController : MonoBehaviour
     public float turnSpeed = 6f;
     
     // private CharacterController characterController;
+    private GameController gameController;
     private new Rigidbody rigidbody;
+    private bool hasBeenHit = false;
     private float timer = 0f;
     private string pattern;
 
@@ -20,6 +22,7 @@ public class TargetController : MonoBehaviour
         this.pattern = ChoosePattern();
         rigidbody = GetComponent<Rigidbody>();
         // characterController = gameObject.GetComponent<CharacterController>();
+        gameController = GameObject.Find("Game Controller").GetComponent<GameController>();
         StartCoroutine(DelayAction(3));
     }
     
@@ -95,5 +98,16 @@ public class TargetController : MonoBehaviour
     private float oscillate(float timer, float speed, float scale)
     {
         return Mathf.Cos(timer * speed / Mathf.PI) * scale;
-    }  
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Shell"){
+            if(hasBeenHit) return;
+            this.hasBeenHit = true;
+            this.gameController.SetHitOnTarget();
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
+    }
 }

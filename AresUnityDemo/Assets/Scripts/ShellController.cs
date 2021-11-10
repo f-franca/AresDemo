@@ -12,11 +12,11 @@ public class ShellController : MonoBehaviour
         Destroy(gameObject, this.lifeSpan);
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.tag == "Target"){
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
-        }
-    }
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     if(collision.gameObject.tag == "Target"){
+    //         Destroy(collision.gameObject);
+    //         Destroy(gameObject);
+    //     }
+    // }
 }
