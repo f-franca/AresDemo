@@ -4,7 +4,7 @@
 This project consists in a game demonstration for ARES Company, the objective is for you, the player, to control an armored tank and destroy all targets in the scene by firing at them. The game itself was made with Unity and the user inputs all the commands through an C++ application using the terminal.
 
 ## How to Play
-Start the Unity Game at `./UnityGame-LinuxBuild/`, then start the C++ application at `./CppExecutable/`.
+Start the Unity Game at `./UnityGame-LinuxBuild/`, then start the C++ application **through the terminal** at `./CppExecutable/`.
 
 The player can move the **tank** by pressing:
 - W to move forward
