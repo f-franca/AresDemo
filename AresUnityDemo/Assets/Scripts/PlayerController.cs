@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    //public CharacterController characterController;
     public float speed = 6f;
     public float turnSpeed = 50f;
     public float turretSpeed = 50f;
@@ -14,29 +13,21 @@ public class PlayerController : MonoBehaviour
     private GameObject turret;
     private GameObject cannon;
     private GameObject cannonTip;
-    private new Rigidbody rigidbody;
+    private Rigidbody rigidbody;
     private bool hasInput = false;
     private bool hasShot = false;
-    private int fuel = 50;
-    private int totalFuelConsumed = 0;
     private int firedRounds = 0;
     private float timeBetweenShooting = 1f;
-    // public float movementPeriod;
-    // private float timeMoving;
     private string messageFromTcpServer;
 
     // Start is called before the first frame update
     void Start()
     {
-        // body = GameObject.Find("Player/Body/");
         rigidbody = GetComponent<Rigidbody>();
-        // characterController = gameObject.GetComponentInChildren<CharacterController>();
         turret = GameObject.Find("Player/Turret");
         cannon = GameObject.Find("Player/Turret/CannonObj");
         cannonTip = GameObject.Find("Player/Turret/CannonObj/Cannon Tip");
         this.messageFromTcpServer = "";
-        // this.previousMessage = "";
-        // this.timeMoving = this.movementPeriod;
     }
 
     void Update(){
@@ -44,7 +35,6 @@ public class PlayerController : MonoBehaviour
             this.timeBetweenShooting -= Time.deltaTime;
 
         if(this.messageFromTcpServer != ""
-            // (this.previousMessage != this.messageFromTcpServer)
         ) {
             if(this.messageFromTcpServer == " "){
                 if(!this.hasShot){
@@ -52,7 +42,6 @@ public class PlayerController : MonoBehaviour
                     CheckForMovement(this.messageFromTcpServer);
                     this.messageFromTcpServer = "";
                     this.hasShot = true;
-                    // this.firedRounds++;
                 }
                 if(this.timeBetweenShooting  <= 0){
                     this.hasShot = false;
@@ -65,8 +54,6 @@ public class PlayerController : MonoBehaviour
     }
     
     public void CheckForMovement(string messageFromTcpServer){
-        // float horizontalMove = Input.GetAxis("Horizontal");
-        // float verticalMove = Input.GetAxis("Vertical");
         float horizontalMove = 0f;
         float verticalMove = 0f;
         bool turretLeft = false;
@@ -103,26 +90,22 @@ public class PlayerController : MonoBehaviour
 
         if (horizontalMove != 0 || verticalMove != 0) hasInput = true;
 
-        // if (Input.GetKey("l")){
         if(turretRight){
-        	turret.transform.Rotate(0, Time.deltaTime * turretSpeed, 0);//, Space.World);
+        	turret.transform.Rotate(0, Time.deltaTime * turretSpeed, 0);
 	    }
-        // if (Input.GetKey("j")){
         if(turretLeft){
-            turret.transform.Rotate(0, Time.deltaTime * -turretSpeed, 0);//, Space.World);
+            turret.transform.Rotate(0, Time.deltaTime * -turretSpeed, 0);
 	    }
-        // if (Input.GetKey("i")){
         if(turretUp){
-        	cannon.transform.Rotate(Time.deltaTime * -turretSpeed, 0, 0);//, Space.World);
+        	cannon.transform.Rotate(Time.deltaTime * -turretSpeed, 0, 0);
 			if (cannon.transform.eulerAngles.x < 300 && cannon.transform.eulerAngles.x > 10)        	
 				cannon.transform.eulerAngles = new Vector3(
 					300,
     				cannon.transform.eulerAngles.y,
     				cannon.transform.eulerAngles.z);
 	    }
-        // if (Input.GetKey("k")){
         if(turretDown){
-    		cannon.transform.Rotate(Time.deltaTime * turretSpeed, 0, 0);//, Space.World);
+    		cannon.transform.Rotate(Time.deltaTime * turretSpeed, 0, 0);
 			if (cannon.transform.eulerAngles.x < 300 && cannon.transform.eulerAngles.x > 10)        	
 				cannon.transform.eulerAngles = new Vector3(
 					10,
@@ -141,13 +124,11 @@ public class PlayerController : MonoBehaviour
         {
             float timeMoving = 0.5f;
 
-            // while(timeMoving >= 0){
                 float angularDistance = horizontalMove * turnSpeed * Time.deltaTime;
                 Vector3 distance = direction * speed * Time.deltaTime;
                 timeMoving -= Time.deltaTime;
                 transform.Rotate(Vector3.up, angularDistance);
                 rigidbody.MovePosition(transform.position + distance);
-            // }
         }
 
         Shoot(messageFromTcpServer);
@@ -157,7 +138,6 @@ public class PlayerController : MonoBehaviour
 
     public void Shoot(string messageFromTcpServer){
         if (messageFromTcpServer == " ")
-        // if (Input.GetKeyDown("space"))
         {
  			GameObject shell = Instantiate(projectile, cannonTip.transform.position, cannonTip.transform.rotation);
  			shell.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, launchVelocity * 1000, 0));
@@ -171,22 +151,5 @@ public class PlayerController : MonoBehaviour
 
     public int FiredRounds(){
         return this.firedRounds;
-    }
-
-    public void ConsumeFuel(int amount)
-    {
-        this.fuel -= amount;
-        this.totalFuelConsumed += amount;
-        //Debug.Log($"Fuel consumed: {amount}, total fuel left: {this.fuel}");
-    }
-
-    public int GetFuel()
-    {
-        return this.fuel;
-    }
-
-    public int GetTotalCost()
-    {
-        return this.totalFuelConsumed;
     }
 }

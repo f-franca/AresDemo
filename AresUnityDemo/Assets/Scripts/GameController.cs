@@ -8,12 +8,8 @@ public class GameController : MonoBehaviour
 {
     public GameObject target;
     public GameObject player;
-    // public PlayerController player;
     public float restartdelay = 1f;
-    // public Text timerText;
-    // public Text fuelText;
     public float gameTime = 60;
-    //public GameObject completeLevelUI;
     public int numberOfTargets = 3;
 
     private bool hasGameStarted = false;
@@ -48,7 +44,6 @@ public class GameController : MonoBehaviour
             else
             {
                 EndGame("Time is up");
-                // Debug.Log("GAME OVER (NOTIFY C++)");
             }
     }
 
@@ -67,12 +62,10 @@ public class GameController : MonoBehaviour
         y = 0.3f;
         Vector3 posTarget;       
         
-        // transform.position = pos;
         for(int i = 0; i < numberOfTargets; i++){
             x = Random.Range(-18f, 18f);
             z = Random.Range(-18f, 18f);
             posTarget = new Vector3(x, y, z);
-            // Debug.Log($"Random pos {pos}");
             GameObject targetGameObject = Instantiate(target, posTarget, gameObject.transform.rotation);
             targetGameObject.name = "Target";
         }
@@ -100,7 +93,6 @@ public class GameController : MonoBehaviour
     void UpdateTimer()
     {
         gameTime -= UnityEngine.Time.deltaTime;
-        // timerText.text = ("Timer: " + (int)gameTime);
     }
 
     private bool CheckForTargets(){
@@ -120,15 +112,4 @@ public class GameController : MonoBehaviour
     public int GetHitsOnTarget(){
         return this.hitsOnTarget;
     }
-    // void updateFuelText()
-    // {
-    //     fuelText.text = ("Fuel: " + player.GetFuel());
-    // }
-
-    /*
-        public void CompleteLevel()
-        {
-            gameover = true;
-            completeLevelUI.SetActive(true);
-        }*/
 }

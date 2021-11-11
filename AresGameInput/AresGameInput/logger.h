@@ -32,18 +32,13 @@ void OpenFile(){
 
 void CloseFile(int shotsFired){
 	::end = std::chrono::steady_clock::now();
-//	string timeDifference = "" + std::chrono::duration_cast<std::chrono::seconds> (::end - ::begin).count() + "[s]";
 	string now = getCurrentDateTime("now");
-//	string finalMsg =  " || Shots fired: " + shotsFired + " || Hits on target: " + hitsOnTarget;
     ofs << now << '\t' << "Time elapsed: " << std::chrono::duration_cast<std::chrono::milliseconds> (::end - ::begin).count() << "[ms]";
 	ofs << " || Shots fired: " << shotsFired << '\n';
 	ofs.close();
 }
 
 inline void Logger( string logMsg ){
-//    string filePath = "./log_"+getCurrentDateTime("date")+".txt";
     string now = getCurrentDateTime("now");
-//    ofstream ofs(filePath.c_str(), std::ios_base::out | std::ios_base::app );
     ofs << now << '\t' << logMsg << '\n';
-//    ofs.close();
 }

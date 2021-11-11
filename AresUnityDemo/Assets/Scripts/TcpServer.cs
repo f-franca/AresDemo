@@ -24,12 +24,11 @@ public class TcpServer : MonoBehaviour {
 	private TcpClient connectedTcpClient; 
     private PlayerController player;
     private GameController gameController;
-	// private bool isEnabled = false;
     private bool playerFound = false;
 	private bool startTheGame = false;
 	private bool gameOverTcp = false;
 	private bool okSentToClient = true;
-	private float delayBeforeEmptyStream = 0.3f;
+	private float delayBeforeEmptyStream = 0.1f;
     private float period;
     private string messageToSend;
     	
@@ -87,7 +86,6 @@ public class TcpServer : MonoBehaviour {
 					this.messageToSend = "";
 					int firedRounds = MakePlayerShoot();
 					SendMessageToTcpClient(firedRounds.ToString());
-					// SendMessageToTcpClient( (this.gameController.GetHitsOnTarget()).ToString() );
 					break;
             }
         } else{
@@ -128,23 +126,13 @@ public class TcpServer : MonoBehaviour {
 								while ((length = stream.Read(bytes, 0, bytes.Length)) != 0) { 	
 									var incommingData = new byte[length]; 							
 									Array.Copy(bytes, 0, incommingData, 0, length);  							
-									// Convert byte array to string message.
 									this.messageToSend = Encoding.ASCII.GetString(incommingData);
-									// Debug.Log($"recv stream @ tcpServer [{this.messageToSend}]");		
 									this.period = this.delayBeforeEmptyStream;
 									this.okSentToClient = false;
 									break;
 								}
 							}
 
-							// if(gameController.IsGameOver()){
-							// 	string messageGameOver = "" + gameController.GameOverReason() + " || Hits on Target: " + (this.gameController.GetHitsOnTarget()).ToString();
-							// 	SendMessageToTcpClient(messageGameOver);
-							// 	this.gameOverTcp = true;
-							// 	return;
-							// }
-									
-							// Debug.Log($"data unavailable | period {this.period}");
 							if(this.period < 0f) this.messageToSend = "";
 							switch(this.messageToSend){
 								case "quit":
@@ -166,15 +154,6 @@ public class TcpServer : MonoBehaviour {
 										this.okSentToClient = true;
 									}
 									break;
-									// goto NextMessage;
-								// case " ":
-								// 	// send back do c++ player.FiredRounds()
-								// 	SendMessageToPlayer(this.messageToSend);
-								// 	this.messageToSend = "";
-								// 	// SendMessageToPlayer(this.messageToSend);
-								// 	int firedRounds = PlayerFiredRounds();
-								// 	SendMessageToTcpClient(firedRounds.ToString());
-								// 	break;
 							}
                         }
 						NextClient:
@@ -197,13 +176,6 @@ public class TcpServer : MonoBehaviour {
 		catch(Exception e){
 			Debug.Log($"Error when trying to TCP Client: {e.Message}");
 		}
-	    // try{
-        // 	tcpListener.Stop();
-        // 	Debug.Log("Closing TCP Listener");
-		// }
-		// catch(Exception e){
-		// 	Debug.Log($"Erro ao fechar TCP Listener: {e.Message}");
-		// }
 	}
 
 	private void GameControllerStartGame(){
@@ -245,11 +217,8 @@ public class TcpServer : MonoBehaviour {
 			// Get a stream object for writing. 			
 			NetworkStream stream = connectedTcpClient.GetStream(); 			
 			if (stream.CanWrite) {                 
-				// Convert string message to byte array.                 
 				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(messageToClient);
-				// Write byte array to socketConnection stream.               
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);               
-				// Debug.Log($"Server sent [{messageToClient}], length [{serverMessageAsByteArray.Length}]");
 			}       
 		} 		
 		catch (SocketException socketException) {             

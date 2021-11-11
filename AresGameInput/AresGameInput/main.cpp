@@ -36,6 +36,11 @@ string ButtonMap(string input){
 	return output;
 }
 
+void SimpleInstructions(){
+	cout << "WASD to move the tank\nIJKL to move the turret\nSpace to shoot" << endl;
+	cout << "\"Return\" to start the game\n\"Escape\" to quit" << endl;
+}
+
 int main(int argc, char const *argv[])
 {
 	OpenFile();
@@ -43,7 +48,6 @@ int main(int argc, char const *argv[])
 	bool hasGameStarted = false;
 	int sock = 0;
 	int shotsFired = 0;
-//	int hitsOnTarget = 0;
 	struct sockaddr_in serv_addr;
 	
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -71,9 +75,7 @@ int main(int argc, char const *argv[])
 		return -1;
 	}
 	
-	Logger("\"Return\" to start the game");
-	Logger("\"Escape\" to quit");
-	cout << "\"Return\" to start the game\n\"Escape\" to quit" << endl;
+	SimpleInstructions();
 	
 	while (true){
 		int byte_count;
@@ -104,7 +106,7 @@ int main(int argc, char const *argv[])
 			
 			StartTimer();
 			string start = "start";
-			Logger("Starting game");
+			Logger("Starting the game");
 			const char* toSend = start.c_str();
 			send(sock , toSend , strlen(toSend) , 0 );
 			hasGameStarted = true;
@@ -121,7 +123,6 @@ int main(int argc, char const *argv[])
 			char subbuff[byte_count + 1];
 			memcpy( subbuff, &buffer[0], byte_count );
 			subbuff[byte_count] = '\0';
-//			cout << "byte_count: " << byte_count << " sub buffer: " << subbuff << endl;
 
 			if( strcmp(subbuff,"ok") != 0 ){  // message other than OK received
 				Logger("Did not received OK, ending program:: " + string(subbuff));
@@ -133,19 +134,9 @@ int main(int argc, char const *argv[])
 			char subbuff2[byte_count + 1];
 			memcpy( subbuff2, &buffer[0], byte_count );
 			subbuff2[byte_count] = '\0';
-//			cout << "byte_count: " << byte_count << " sub buffer2:[" << subbuff2 << "]"<< endl;
 			Logger("Firing weapon:: Shots fired: " + string(subbuff2));
 			shotsFired = atoi(subbuff2);
 			
-//			byte_count = recv(sock, buffer, sizeof(buffer), 0);
-//			char subbuff3[byte_count + 1];
-//			memcpy( subbuff3, &buffer[0], byte_count );
-//			subbuff3[byte_count] = '\0';
-////			cout << "byte_count: " << byte_count << " sub buffer2:[" << subbuff2 << "]"<< endl;
-//			Logger("Hits on target: " + string(subbuff3));
-//			hitsOnTarget = atoi(subbuff3);
-			
-
 			continue;
 		}
 		else {
@@ -160,7 +151,6 @@ int main(int argc, char const *argv[])
 			char subbuff[byte_count + 1];
 			memcpy( subbuff, &buffer[0], byte_count );
 			subbuff[byte_count] = '\0';
-//			cout << "byte_count: " << byte_count << " sub buffer: " << subbuff << endl;
 
 			if( strcmp(subbuff,"ok") != 0){  // message other than OK received
 				Logger("Did not received OK, ending program:: " + string(subbuff));
@@ -170,7 +160,6 @@ int main(int argc, char const *argv[])
 			
 			
 			Logger( ButtonMap(toSendStr) + " pressed");
-//			cout << endl << "char: [" << oneChar << "] = [" << toSend << "] | [" << oneCharInt << "] sent" << endl;
 		}
 
 	}

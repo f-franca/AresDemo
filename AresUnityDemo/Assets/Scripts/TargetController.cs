@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class TargetController : MonoBehaviour
 {
-    //public CharacterController characterController;
     public float speed = 6f;
     public float turnSpeed = 6f;
     
-    // private CharacterController characterController;
     private GameController gameController;
-    private new Rigidbody rigidbody;
+    private Rigidbody rigidbody;
     private bool hasBeenHit = false;
     private float timer = 0f;
     private string pattern;
@@ -18,10 +16,8 @@ public class TargetController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // this.pattern = "horizontal";
         this.pattern = ChoosePattern();
         rigidbody = GetComponent<Rigidbody>();
-        // characterController = gameObject.GetComponent<CharacterController>();
         gameController = GameObject.Find("Game Controller").GetComponent<GameController>();
         StartCoroutine(DelayAction(3));
     }
@@ -42,7 +38,6 @@ public class TargetController : MonoBehaviour
         string[] patterns = {"horizontal","circular","sinus"};
         int index = Random.Range(0,patterns.Length);
         string pattern = patterns[index];
-        // Debug.Log($"Randomly selected pattern is {pattern}"); 
         return pattern;
     }
 
@@ -70,7 +65,6 @@ public class TargetController : MonoBehaviour
         Vector3 distance = direction * this.speed * Time.deltaTime;
 
         rigidbody.MovePosition(transform.position + distance * oscillate(timer,speed,scale));
-        // characterController.Move(distance * oscillate(timer,speed,scale) );
     }
 
     private void MoveCircular(){
@@ -80,7 +74,6 @@ public class TargetController : MonoBehaviour
         Vector3 distance = direction * this.speed * Time.deltaTime;
 
         rigidbody.MovePosition(transform.position + distance);
-        // characterController.Move(distance);
         transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed);
     }
 
@@ -91,7 +84,6 @@ public class TargetController : MonoBehaviour
         Vector3 distance = direction * this.speed * Time.deltaTime;
 
         rigidbody.MovePosition(transform.position + distance * oscillate(timer, speed/10, scale) );
-        // characterController.Move(distance * oscillate(timer, speed/10, scale) );
         transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * oscillate(timer, speed*1.5f, scale*4) );
     }
 

@@ -14,31 +14,13 @@ public class FollowPlayer : MonoBehaviour
     private GameObject player;
     private Space offsetPositionSpace = Space.Self;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        //StartCoroutine(WaitAfterStart(3)); //
-    }
-
     // Update is called once per frame
     void Update()
     {
-        // TryToFindPlayer();
         if (!this.playerFound){
-			// Debug.Log("Player indeed not found @ camera");
         	FindPlayer();
 			return;
 		}
-        /*
-        //transform.position = player.transform.position + offset;
-        //transform.rotation = Quaternion.Lerp(transform.rotation, player.transform.rotation, Time.deltaTime * speed);
-        
-        Vector3 desiredPosition = player.transform.position + offset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
-        transform.position = smoothedPosition;
-        transform.LookAt(player.transform);
-        */
     }
 
     
@@ -51,9 +33,7 @@ public class FollowPlayer : MonoBehaviour
             Vector3 desiredPosition = player.transform.TransformPoint(offset);
             Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
 
-            //transform.position = player.transform.TransformPoint(offset);
             transform.position = smoothedPosition;
-            //transform.position = desiredPosition;
         }
         else
         {
@@ -70,24 +50,9 @@ public class FollowPlayer : MonoBehaviour
             transform.rotation = player.transform.rotation;
         }
     }
-
-    // private void TryToFindPlayer(){
-    //     if(!this.player){
-    //         try{
-    //             // GameObject
-    //             this.player = GameObject.Find("Player/Turret/CannonObj");
-    //             Debug.Log($"Player found @ camera {player}");
-    //         } catch(Exception e){
-    //             Debug.Log($"Player not found @ camera {e}");
-    //         }
-    //     }
-    // }
-
     private void FindPlayer(){
         GameObject playerGO = GameObject.Find("Player");
         if(playerGO){
-			// Debug.Log("Player found @ camera");
-            // this.player = playerGO.GetComponent<PlayerController>();
             this.player = GameObject.Find("Player/Turret/CannonObj");
             this.playerFound = true;
         }
